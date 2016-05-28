@@ -67,6 +67,30 @@
                 return found === args.length; // did we find all of them in this cell?
             };
         };
+        $.expr[':'].filterTableFindAcrossAll = jQuery.expr.createPseudo(function(arg) {
+            // build an array of each non-falsey value passed
+            var raw_args = arg.split(/[\s,]/),
+                args = [];
+            $.each(raw_args, function(i, v) {
+                var t = v.replace(/^\s+|\s$/g, ''); // trim the string
+                if (t) {
+                    args.push(t);
+                }
+            });
+            // if there aren't any non-falsey values to search for, abort
+            if (!args.length) {
+                return false;
+            }
+            return function(el) {
+                var found = 0; // how many terms were found?
+                $.each(args, function(i, v) {
+                    if ($(el).closest('tr').text().toUpperCase().indexOf(v.toUpperCase()) >= 0) {
+                        found++; // found another term
+                    }
+                });
+                return found === args.length; // did we find all of them in this cell?
+            };
+        });
     } else { // build the pseudo selector for jQuery >= 1.8
         $.expr[':'].filterTableFind = jQuery.expr.createPseudo(function(arg) {
             return function(el) {
